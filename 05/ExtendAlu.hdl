@@ -1,0 +1,49 @@
+// This file is part of nand2tetris, as taught in The Hebrew University, and
+// was written by Aviv Yaish. It is an extension to the specifications given
+// [here](https://www.nand2tetris.org) (Shimon Schocken and Noam Nisan, 2017),
+// as allowed by the Creative Common Attribution-NonCommercial-ShareAlike 3.0
+// Unported [License](https://creativecommons.org/licenses/by-nc-sa/3.0/).
+
+
+// The ExtendAlu chip is an extension of the standard ALU which also supports
+// shift operations.
+// The inputs of the extended ALU are instruction[9], x[16], y[16].
+// The "ng" and "zr" output pins behave the same as in the regular ALU.
+// The "out" output is defined as follows:
+// If instruction[8]=1 and instruction[7]=1 the output is identical to the 
+// regular ALU, where:
+// instruction[5]=zx, instruction[4]=nx, ..., instruction[0]=no
+// Else, if instruction[8]=0 and instruction[7]=1, the output is a shift:
+// - If instruction[4] == 0, the input "y" will be shifted, otherwise "x".
+// - If instruction[5] == 0, the shift will be a right-shift, otherwise left.
+// - All other inputs are undefined.
+
+CHIP ExtendAlu {
+     IN x[16], y[16], instruction[9];
+     OUT out[16], zr, ng;
+     
+     PARTS:
+     // Put your code here:
+     //checking the case
+     And(a=instruction[8], b=instruction[7],out=regalu);
+
+     //calculating the shift and indicating which of them is the wanted one
+     ShiftRight(in=y,out=righty);
+     ShiftRight(in=x, out=rightx);
+     ShiftLeft(in=y, out=lefty);
+     ShiftLeft(in=x, out=leftx);
+      
+     Mux4Way16(sel=instruction[4..5],a=righty,b=rightx,c=lefty,d=leftx,out=extAluIn);
+     
+     //calculating the regular case output
+     ALU(x=x,y=y,zx=instruction[5],nx=instruction[4],zy=instruction[3],ny=instruction[2],f=instruction[1],no=instruction[0],out=regaluout,zr=regzr,ng=regng);
+     
+     //calculating the extended case output
+     Not(in=instruction[4],out= notins4);
+     ALU(x=extAluIn,y=extAluIn,zx=notins4,nx=false,zy=instruction[4],ny=false,f=true,no=false,out=extOut,zr=extzr,ng=extng);
+
+     //final output selection 
+     Mux16(a=extOut,b=regaluout,sel=regalu,out=out);
+     Mux(a=extzr,b=regzr,sel=regalu,out=zr);
+     Mux(a=extng,b=regng,sel=regalu,out=ng);
+}

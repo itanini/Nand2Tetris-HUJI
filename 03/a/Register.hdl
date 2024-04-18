@@ -1,0 +1,39 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/a/Register.hdl
+
+/**
+ * 16-bit register:
+ * If load[t] == 1 then out[t+1] = in[t]
+ * else out does not change
+ */
+
+CHIP Register {
+    IN in[16], load;
+    OUT out[16];
+
+    PARTS:
+	And16(a=in, b=in, out[0]=out0, out[1]=out1, out[2]=out2, out[3]=out3, out[4]=out4, out[5]=out5, out[6]=out6, out[7]=out7, out[8]=out8, out[9]=out9, out[10]=out10, out[11]=out11 ,out[12]=out12, out[13]=out13, out[14]=out14, out[15]=out15);
+	
+    Bit(in=out0, load=load, out=outer0);
+	Bit(in=out1, load=load, out=outer1);
+	Bit(in=out2, load=load, out=outer2);
+	Bit(in=out3, load=load, out=outer3);
+	Bit(in=out4, load=load, out=outer4);
+	Bit(in=out5, load=load, out=outer5);
+	Bit(in=out6, load=load, out=outer6);
+	Bit(in=out7, load=load, out=outer7);
+	Bit(in=out8, load=load, out=outer8);
+	Bit(in=out9, load=load, out=outer9);
+	Bit(in=out10, load=load, out=outer10);
+	Bit(in=out11, load=load, out=outer11);
+	Bit(in=out12, load=load, out=outer12);
+	Bit(in=out13, load=load, out=outer13);
+	Bit(in=out14, load=load, out=outer14);
+	Bit(in=out15, load=load, out=outer15);
+	
+	And16(a[0]=outer0, a[1]=outer1, a[2]=outer2,a[3]=outer3,a[4]=outer4,a[5]=outer5,a[6]=outer6,a[7]=outer7,a[8]=outer8,
+	a[9]=outer9,a[10]=outer10,a[11]=outer11,a[12]=outer12,a[13]=outer13,a[14]=outer14,a[15]=outer15, b[0]=outer0, b[1]=outer1, b[2]=outer2,b[3]=outer3,b[4]=outer4,b[5]=outer5,b[6]=outer6,b[7]=outer7,b[8]=outer8,
+	b[9]=outer9,b[10]=outer10,b[11]=outer11,b[12]=outer12,b[13]=outer13,b[14]=outer14,b[15]=outer15, out=out);
+}
